@@ -1,0 +1,83 @@
+# This docker-compose.yaml sets up a multi-zone deployment
+# for Question2Answer (Q2A) from a public image
+# Still need to add bugfixes to Dockerfile
+
+
+
+services:
+  # ------------------------
+  # Public zone – Load Balancer
+  # ------------------------
+  public_proxy:
+    image: nginx:alpine
+    container_name: public_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - dmz_q2a
+    networks:
+      - public_net
+      - dmz_net
+
+  # ------------------------
+  # DMZ – Q2A Application
+  # ------------------------
+  dmz_q2a:
+    image: q2apro/q2a:latest
+    container_name: dmz_q2a
+    environment:
+      Q2A_DB_HOST: mariadb
+      Q2A_DB_NAME: q2a
+      Q2A_DB_USER: q2auser
+      Q2A_DB_PASSWORD: q2apassword
+      Q2A_SITE_URL: http://localhost
+    volumes:
+      # ONLY uploads are persisted – never overwrite app code
+      - q2a_uploads:/var/www/html/qa-include/uploads
+      # Fix Apache DocumentRoot explicitly
+      - ./apache-q2a.conf:/etc/apache2/conf-enabled/q2a.conf:ro
+    depends_on:
+      - mariadb
+    networks:
+      - dmz_net
+      - internal_net
+
+  # ------------------------
+  # Internal zone – Database
+  # ------------------------
+  mariadb:
+    image: mariadb:10.6
+    container_name: internal_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: q2a
+      MYSQL_USER: q2auser
+      MYSQL_PASSWORD: q2apassword
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - internal_net
+
+# ------------------------
+# Networks (3 zones)
+# ------------------------
+networks:
+  public_net:
+    driver: bridge
+
+  dmz_net:
+    driver: bridge
+    internal: true
+
+  internal_net:
+    driver: bridge
+    internal: true
+
+# ------------------------
+# Volumes
+# ------------------------
+volumes:
+  q2a_uploads:
+  mariadb_data:

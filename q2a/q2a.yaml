@@ -1,0 +1,14 @@
+# Q2A Docker Compose Configuration for testing
+# Changing this variables will change the variables inside the container
+# by using the entrypoint script
+
+services:
+  q2a:
+    image: my-q2a:1.0
+    environment:
+      - DB_HOST=mariadb
+      - DB_USER=q2a_user
+      - DB_PASS=secret
+      - DB_NAME=q2a_db
+    ports:
+      - 80:80
