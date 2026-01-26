@@ -75,7 +75,7 @@ services:
       - mysql
 
   mysql:
-    image: mysql:8.0
+    image: mysql:9.6.0
     environment:
       MYSQL_DATABASE: q2adb
       MYSQL_USER: q2auser
