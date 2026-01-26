@@ -28,8 +28,11 @@ RUN curl -L https://github.com/q2a/question2answer/archive/refs/heads/master.zip
 # Configure Q2A
 
 RUN mv qa-config-example.php qa-config.php  
-#   && mv .htaccess-example .htaccess
-RUN ls -la /var/www/html
+
+# ✅ CLEAN APACHE PERMISSIONS
+RUN chown -R www-data:www-data /var/www/html \
+    && find /var/www/html -type d -exec chmod 755 {} \; \
+    && find /var/www/html -type f -exec chmod 644 {} \;
 
 
 # Set permissions
