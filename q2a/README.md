@@ -40,7 +40,7 @@ docker build -t my-q2a:1.0 .
 ```bash
 docker run -d \
   --name q2a \
-  -p 8080:80 \
+  -p 80:80 \
   -e DB_HOST=mysql \
   -e DB_USER=q2auser \
   -e DB_PASS=secret \
@@ -51,7 +51,7 @@ docker run -d \
 Then open your browser:
 
 ```
-http://localhost:8080
+http://localhost:80
 ```
 
 ---
@@ -65,7 +65,7 @@ services:
   q2a:
     image: my-q2a:1.0
     ports:
-      - "8080:80"
+      - "80:80"
     environment:
       DB_HOST: mysql
       DB_USER: q2auser
