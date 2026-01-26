@@ -1,6 +1,7 @@
 # This docker-compose.yaml sets up a multi-zone deployment
-# for Question2Answer (Q2A) from a public image
-# Still need to add bugfixes to Dockerfile
+# for Question2Answer (Q2A) from a public image I created in my dockerhub repository
+version: '3.8'
+
 
 
 
