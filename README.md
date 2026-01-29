@@ -1,94 +1,163 @@
-# Q2A Docker Image – Foundation Project
+# Question2Answer (Q2A) – 3-Zone Docker Architecture
 
-## Purpose
+This project demonstrates a **multi-zone Docker Compose deployment** of the
+**Question2Answer (Q2A)** application using **load balancing with round-robin**,
+service isolation, and horizontal scaling.
 
-This folder contains a **custom Docker image for Question2Answer (Q2A)** built as a **foundation project** for exploring modern container-based application deployment.
-
-The objective is to create a **clean, reusable application image** that can later be deployed across different environments and orchestration platforms.
-
----
-
-## What This Project Demonstrates
-
-This project focuses on **practical container engineering skills**, including:
-
-- Building a **custom Docker image** for a real PHP application
-- Installing and configuring required system and PHP dependencies
-- Preparing Apache and PHP for containerized execution
-- Separating application logic from environment-specific configuration
-- Designing images intended for **reuse in larger architectures**
+The Q2A image used is a **public image built and published by the author on Docker Hub**.
 
 ---
 
-## Technical Scope
+## Overview
 
-- **Technology stack**
-  - PHP + Apache
-  - Question2Answer (Q2A)
-  - Docker
+This setup simulates a **real-world production-style architecture** using three logical network zones:
 
-- **Image design goals**
-  - Minimal and understandable Dockerfile
-  - Clear build steps
-  - Environment-agnostic configuration
-  - Suitable for local development and test environments
+1. **Public Zone**
+   - Exposes HTTP traffic to the host
+   - Runs a reverse proxy / load balancer (Nginx)
 
----
+2. **DMZ (Application Zone)**
+   - Runs multiple replicas of the Q2A application
+   - Scaled horizontally
+   - Not directly exposed to the host
 
-## Architectural Direction
-
-This image is intentionally designed to be **infrastructure-agnostic**.
-
-In later stages, it will be reused in a **multi-zone test environment**, including:
-
-- **Public zone**
-  - Internet-facing entry point / load balancer
-- **DMZ**
-  - Q2A application containers
-- **Internal zone**
-  - Database services (e.g. MariaDB)
-
-This allows realistic experimentation with **network segmentation and security boundaries**.
+3. **Internal Zone**
+   - Runs the MariaDB database
+   - Only accessible from the application layer
 
 ---
 
-## Roadmap
+## Architecture Diagram
 
-Planned future work using this image:
+```
+                    ┌──────────────────────┐
+                    │      Browser(s)      │
+                    │  http://localhost    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   Public Zone        │
+                    │  Nginx Load Balancer │
+                    │  (Round Robin)       │
+                    └──────────┬───────────┘
+                               │
+             ┌─────────────────┼─────────────────┐
+             │                 │                 │
+             ▼                 ▼                 ▼
+   ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+   │   Q2A Replica  │ │   Q2A Replica  │ │   Q2A Replica  │
+   │      #1        │ │      #2        │ │      #3        │
+   │    (DMZ)       │ │    (DMZ)       │ │    (DMZ)       │
+   └─────────┬──────┘ └─────────┬──────┘ └─────────┬──────┘
+             │                  │                  │
+             └──────────────────┼──────────────────┘
+                                ▼
+                     ┌──────────────────────┐
+                     │   Internal Zone      │
+                     │      Database        │
+                     └──────────────────────┘
+```
 
-- Docker Compose–based multi-zone test network
-- Infrastructure provisioning with **Terraform**
-- Container orchestration with **Kubernetes**
-- Comparative analysis of deployment strategies and tooling
-- Cloud deployment experiments (AWS)
+> When scaling the application, additional Q2A replicas are automatically
+> included in the load balancer pool.
 
 ---
 
-## Why This Matters
+## How It Works
 
-Rather than relying on prebuilt images, this project demonstrates:
-- Understanding of **how containers are built**
-- Awareness of **application lifecycle and configuration**
-- Ability to design components that scale from **local testing to cloud deployment**
-
-The emphasis is on **strong fundamentals**, clean structure, and forward compatibility.
-
----
-
-## Status
-
-🟢 **Stable foundation**
-
-The image builds successfully and runs locally.  
-Further complexity will be added incrementally in future iterations.
+- The **Nginx proxy** distributes incoming HTTP requests using **round-robin**
+- The `q2a` service can be scaled to any number of replicas
+- Each replica connects to the same database in the internal network
+- Docker’s internal DNS ensures service discovery
+- No container uses a fixed `container_name` (required for scaling)
 
 ---
 
-## Notes
+## Running the Stack
 
-This project is part of a broader portfolio focused on:
-- Containerization
-- Infrastructure as Code
-- Cloud-native application design
+### Start the environment with 5 Q2A replicas
 
-Design decisions prioritize **clarity, maintainability, and learning value**.
+```bash
+docker compose -f Zones-3.yaml up -d --scale q2a=5
+```
+
+This will:
+- Start the database
+- Start the load balancer
+- Start **5 Q2A containers**
+- Balance traffic automatically between them
+
+---
+
+## Testing Round-Robin Load Balancing
+
+### Access the application
+Open in your browser:
+
+```
+http://localhost
+```
+
+### Testing tips
+- Open multiple browsers (Chrome, Firefox, Edge)
+- Use incognito/private windows
+- Refresh repeatedly
+
+Each request will be served by a **different Q2A replica**.
+
+---
+
+## Viewing Logs
+
+To observe round-robin behavior and container activity:
+
+```bash
+docker compose -f Zones-3.yaml logs -f q2a
+```
+
+You will see requests handled by different containers.
+
+---
+
+## Database Access Behavior
+
+- All Q2A replicas connect to **the same MySQL database**
+- Multiple users can:
+  - Access the app simultaneously
+  - Log in from different browsers
+  - Create content concurrently
+- This simulates a real multi-user production environment
+
+---
+
+## Why This Architecture Matters
+
+This setup demonstrates:
+- Horizontal scalability
+- Network segmentation (security)
+- Stateless application design
+- Realistic production patterns using Docker Compose
+
+It is ideal for:
+- Learning Docker networking
+- Load-balancer testing
+- Portfolio projects
+- Interviews and demos
+
+---
+
+## Stop and Clean Up
+
+```bash
+docker compose -f Zones-3.yaml down -v
+```
+
+---
+
+## Author Notes
+
+This project was built for **learning, demonstration, and sharing**.
+Feel free to fork, improve, and adapt it.
+
+Happy Dockering 🚀

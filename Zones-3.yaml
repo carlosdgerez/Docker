@@ -1,0 +1,66 @@
+# This docker-compose.yaml sets up a multi-zone deployment
+# for Question2Answer (Q2A) from a public image I created in my dockerhub repository
+
+# Can be tested with this command: docker-compose -f Zones-3.yaml up -d --scale q2a=5
+# The q2a=5 creates 5 replicas that will be load balanced by the proxy on round robin basis
+
+# TESTING NOTE: can open now q2a in diferent browsers in your machine or incognito windows
+# http://localhost should open the Q2A application served by one of the replicas
+# The logs of this containers can be seing with
+# the command  docker compose -f Zones-3.yaml logs -f q2a
+
+
+services:
+  proxy:
+    image: nginx:alpine
+    container_name: public_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - q2a
+    networks:
+      - public_net
+      - dmz_net
+
+  q2a:
+    image: my-q2a:1.1
+    environment:
+      DB_HOST: db
+      DB_NAME: q2a
+      DB_USER: q2auser
+      DB_PASS: q2apass
+    depends_on:
+      - db
+    networks:
+      - dmz_net
+      - internal_net
+    volumes:
+      - q2a_uploads:/var/www/html/qa-content/uploads
+
+
+  db:
+    image: mysql:9.6.0
+    container_name: internal_db
+    environment:
+      MYSQL_DATABASE: q2a
+      MYSQL_USER: q2auser
+      MYSQL_PASSWORD: q2apass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - internal_net
+
+networks:
+  public_net:
+    driver: bridge
+  dmz_net:
+    driver: bridge
+  internal_net:
+    driver: bridge
+
+volumes:
+  q2a_uploads:
+  db_data:
