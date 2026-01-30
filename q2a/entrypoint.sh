@@ -22,3 +22,16 @@ echo "Q2A configuration updated successfully."
 
 # Start Apache in the foreground
 exec apache2-foreground
+
+# Install and enable Redis extension for PHP 
+# This is to store sessions for multiple containers configurations.
+RUN pecl install redis \
+ && docker-php-ext-enable redis
+
+
+# PHP session config for Redis
+RUN echo "session.save_handler = redis" > /usr/local/etc/php/conf.d/redis-session.ini \
+    && echo 'session.save_path = "tcp://redis:6379"' >> /usr/local/etc/php/conf.d/redis-session.ini
+
+    # Start Apache in the foreground
+exec apache2-foreground

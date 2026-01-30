@@ -10,6 +10,14 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 # Enable mod_rewrite
 RUN a2enmod rewrite
 
+# Install Redis PHP extension
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
+# PHP session config for Redis
+RUN echo "session.save_handler = redis" > /usr/local/etc/php/conf.d/redis-session.ini \
+    && echo 'session.save_path = "tcp://redis:6379"' >> /usr/local/etc/php/conf.d/redis-session.ini
+
 # Download Q2A
 
 # Set working directory
