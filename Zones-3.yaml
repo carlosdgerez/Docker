@@ -55,6 +55,8 @@ services:
       - db_data:/var/lib/mysql
     networks:
       internal_net: {}
+
+      
   redis:
     image: redis:7
     networks:
