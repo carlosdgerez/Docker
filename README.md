@@ -3,7 +3,7 @@
 This project demonstrates a **multi-zone Docker Compose deployment** of the
 **Question2Answer (Q2A)** application using **load balancing with round-robin**,
 service isolation, and horizontal scaling.
-
+**shared session handling via Redis**, service isolation, and horizontal scaling.
 The Q2A image used is a **public image built and published by the author on Docker Hub**.
 
 ---
@@ -55,7 +55,7 @@ This setup simulates a **real-world production-style architecture** using three 
                                 ▼
                      ┌──────────────────────┐
                      │   Internal Zone      │
-                     │      Database        │
+                     │  Database + Redis    │
                      └──────────────────────┘
 ```
 
@@ -71,6 +71,29 @@ This setup simulates a **real-world production-style architecture** using three 
 - Each replica connects to the same database in the internal network
 - Docker’s internal DNS ensures service discovery
 - No container uses a fixed `container_name` (required for scaling)
+
+---
+## Shared Sessions with Redis
+
+PHP sessions are stored in Redis so users remain logged in even when requests
+are handled by different containers.
+
+```
+session.save_handler = redis
+session.save_path = "tcp://redis:6379"
+```
+
+---
+
+## Shared Sessions with Redis
+
+PHP sessions are stored in Redis so users remain logged in even when requests
+are handled by different containers.
+
+```
+session.save_handler = redis
+session.save_path = "tcp://redis:6379"
+```
 
 ---
 
@@ -155,9 +178,21 @@ docker compose -f Zones-3.yaml down -v
 
 ---
 
+
 ## Author Notes
 
 This project was built for **learning, demonstration, and sharing**.
 Feel free to fork, improve, and adapt it.
+
+
+---
+
+## Looking Ahead
+
+This project is designed to evolve into:
+- Kubernetes (Ingress, Deployments, StatefulSets)
+- Terraform-managed cloud infrastructure
+
+---
 
 Happy Dockering 🚀
