@@ -58,12 +58,11 @@ http://localhost:80
 
 ## 🐳 Example `docker-compose.yml`
 
-```yaml
-version: "3.9"
+```"
 
 services:
   q2a:
-    image: my-q2a:1.0
+    image: my-q2a:1.3
     ports:
       - "80:80"
     environment:
