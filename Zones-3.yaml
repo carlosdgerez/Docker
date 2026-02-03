@@ -33,8 +33,11 @@ services:
       DB_PASS: q2apass
       REDIS_HOST: redis
     depends_on:
-      - db
-      - redis
+      db :
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    
     networks:
       dmz_net: {}
       internal_net: {}
@@ -56,9 +59,20 @@ services:
     networks:
       internal_net: {}
 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
       
   redis:
     image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     networks:
       internal_net: {}
 
