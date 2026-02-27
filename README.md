@@ -85,15 +85,7 @@ session.save_path = "tcp://redis:6379"
 
 ---
 
-## Shared Sessions with Redis
 
-PHP sessions are stored in Redis so users remain logged in even when requests
-are handled by different containers.
-
-```
-session.save_handler = redis
-session.save_path = "tcp://redis:6379"
-```
 
 ---
 
