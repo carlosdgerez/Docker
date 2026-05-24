@@ -8,7 +8,7 @@
 This project demonstrates a **multi-zone Docker Compose deployment** of the
 **Question2Answer (Q2A)** application using **load balancing with round-robin**,
 service isolation, and horizontal scaling.
-**shared session handling via Redis**, service isolation, and horizontal scaling.
+**Shared session handling via Redis**, service isolation, and horizontal scaling.
 The Q2A image used is a **public image built and published by the author on Docker Hub**.
 
 ---
@@ -90,15 +90,7 @@ session.save_path = "tcp://redis:6379"
 
 ---
 
-## Shared Sessions with Redis
 
-PHP sessions are stored in Redis so users remain logged in even when requests
-are handled by different containers.
-
-```
-session.save_handler = redis
-session.save_path = "tcp://redis:6379"
-```
 
 ---
 
