@@ -1,5 +1,8 @@
 # Question2Answer (Q2A) – Dockerized (PHP 8.1 + Apache)
 
+
+
+
 This repository provides a **Dockerized setup for Question2Answer (Q2A)** using **PHP 8.1 and Apache**, with automatic configuration via environment variables.
 
 It is designed to be:

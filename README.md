@@ -1,5 +1,10 @@
 # Question2Answer (Q2A) – 3-Zone Docker Architecture
 
+
+![diagram](images/dockerq2a.png)
+
+
+
 This project demonstrates a **multi-zone Docker Compose deployment** of the
 **Question2Answer (Q2A)** application using **load balancing with round-robin**,
 service isolation, and horizontal scaling.
