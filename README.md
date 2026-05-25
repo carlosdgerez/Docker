@@ -2,7 +2,7 @@
 
 
 ![diagram](images/dockerq2a.png)
-
+## Architecture
 
 
 This project demonstrates a **multi-zone Docker Compose deployment** of the

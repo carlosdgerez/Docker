@@ -1,4 +1,4 @@
-# Dockerized Question2Answer changed
+# Dockerized Question2Answer 
 
 
 
@@ -13,7 +13,7 @@ It is designed to be:
 
 
 ![Diagram](/images/q2aDiagram.png)
-## Architecture
+
 
 ---
 
