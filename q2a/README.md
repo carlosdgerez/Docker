@@ -1,4 +1,4 @@
-# Question2Answer (Q2A) – Dockerized (PHP 8.1 + Apache)
+# Dockerized Question2Answer 
 
 
 
