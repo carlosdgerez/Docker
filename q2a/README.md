@@ -11,6 +11,8 @@ It is designed to be:
 - Production-ready
 - Database-agnostic (MySQL / MariaDB)
 
+
+![Diagram](/images/q2aDiagram.png)
 ---
 
 ## 🚀 Features
