@@ -1,8 +1,8 @@
 # Question2Answer (Q2A) – 3-Zone Docker Architecture
 
-
-![diagram](images/dockerq2a.png)
 ## Architecture
+![diagram](images/dockerq2a.png)
+
 
 
 This project demonstrates a **multi-zone Docker Compose deployment** of the
