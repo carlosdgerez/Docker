@@ -13,6 +13,8 @@ It is designed to be:
 
 
 ![Diagram](/images/q2aDiagram.png)
+## Architecture
+
 ---
 
 ## 🚀 Features
